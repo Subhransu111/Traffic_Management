@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const routeSchema = new mongoose.Schema({
   name: { type: String, required: true }, 
   type: { type: String, enum: ["main", "gully"], default: "gully" },
@@ -9,3 +11,6 @@ const routeSchema = new mongoose.Schema({
   ],
   currentStatus: { type: String, enum: ["clear", "congested", "blocked"], default: "clear" }, 
 });
+
+const Route = mongoose.model("Route", routeSchema);
+module.exports = Route;
