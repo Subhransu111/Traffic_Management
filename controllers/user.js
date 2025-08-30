@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const { setuser } = require("../services/auth")
 
 //register new user
 const registeruser = async (req,res)=>{
@@ -42,6 +43,12 @@ const Loginuser = async (req,res)=>{
     catch(error){
     res.status(500).json({msg: error.message});
 }
+
+
+
+const token = setuser(User);
+res.cookies("uid",token)
+return res.redirect("/")
 } ;
 
 module.exports = {
