@@ -1,7 +1,7 @@
-const express = require("express");
-const User = require("../models/user");
-const bcrypt = require("bcryptjs");
-const { setuser } = require("../services/auth")
+import express from "express";
+import User, { findOne } from "../models/user";
+import { hash, compare } from "bcryptjs";
+import { setuser } from "../services/auth";
 
 //register new user
 const registeruser = async (req,res)=>{
@@ -11,7 +11,7 @@ const registeruser = async (req,res)=>{
             return res.status(400).json({msg: "Not all fields have been entered"});
         }
         
-        const hashpassword = await bcrypt.hash(password, 10);
+        const hashpassword = await hash(password, 10);
         const newUser = new User({
             username, email, phone, password: hashpassword, vehicle
         });
@@ -30,28 +30,23 @@ const Loginuser = async (req,res)=>{
         if(!email || !password){
             return res.status(400).json({msg: "Not all fields have been entered"});
         }
-        const user = await User.findOne({email});
-        if(!user){
-            return res.status(400).json({msg: "No account with this email has been registered"});
+        const user = await findOne({email});
+        const isMatch = await compare(password, user.password);
+        if (!user || !isMatch) {
+            return res.status(401).json({ msg: "Invalid credentials" });
         }
-        const match = await bcrypt.compare(password, user.password);
-        if(!match){
-            return res.status(400).json({msg: "Invalid credentials"});
-        }
-        res.status(200).json({msg: "User logged in successfully"});
+
+        const token = setuser(user);
+        res.cookie("uid", token, { httpOnly: true, secure: false });
+        return res.status(200).json({ msg: "User logged in successfully", token });
+
+        
     }
     catch(error){
     res.status(500).json({msg: error.message});
 }
 
+}
 
-
-const token = setuser(User);
-res.cookies("uid",token)
-return res.redirect("/")
-} ;
-
-module.exports = {
-  register: registeruser,
-  login: Loginuser,
-};
+export const register = registeruser;
+export const login = Loginuser;

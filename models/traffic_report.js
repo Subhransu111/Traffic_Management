@@ -1,14 +1,24 @@
 const mongoose = require('mongoose');
 
-const trafficReportSchema = new mongoose.Schema({
-  location: { type: String, enum: ["Point"], default: "Point" },
-  coordinates: { type: [Number], required: true } ,
-  status: { type: String, enum: ["clear", "moderate", "congested"], required: true },
-  reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  timestamp: { type: Date, default: Date.now },
-  confidence: { type: Number, default: 1 } // based on multiple reports
-});
-trafficReportSchema.index({ location: "2dsphere" });
+const trafficSchema = new mongoose.Schema({
+    user:{type: mongoose.Schema.Types.ObjectId, ref: "User"},
+    username: {type:String},
+    location:{
+        lat: Number,
+        lng: Number,
+        address:String
+    },
+    congestionlevel:{
+        type:String,
+        enum:["low","medium","high"],
+        required:true
+    },
 
-const TrafficReport = mongoose.model("TrafficReport", trafficReportSchema);
+
+    reportTime: {type: Date, default: Date.now}
+  
+});
+
+
+const TrafficReport = mongoose.model("TrafficReport", trafficSchema);
 module.exports = TrafficReport;

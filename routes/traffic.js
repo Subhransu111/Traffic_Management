@@ -1,9 +1,7 @@
 const express= require("express");
 const router = express.Router();
+const report = require("../controllers/trafficController.cjs");
 
-
-router.get("/status",(req,res)=>{
-    res.json({status: "Traffic API is working fine"});
-})
+router.post("/report",report.Trafficreport);
 
 module.exports = router;

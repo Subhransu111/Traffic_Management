@@ -1,13 +1,11 @@
 const jwt = require("jsonwebtoken");
-const secret = "qw21@#%^()Aks//<>==+subh91221&"
+const secret = "map_secret";
 function setuser(user){
-    const payload ={
-        ...user
-    };
-
-    return jwt.sign(payload,secret)
-
+    const payload = { id: user._id, email: user.email };
+    return jwt.sign(payload, secret, { expiresIn: "1h" });
 }
+
+  
 
 function getuser(token){
     if (!token) return null;
