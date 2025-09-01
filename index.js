@@ -1,17 +1,23 @@
 const express= require("express");
-const app = express();
+
 const cookieparser = require("cookie-parser");
 const authmiddleware = require("./middleware/auth");
-const trafficRoute = require("./routes/traffic");
-const {connectMongoDb} = require("./connection.cjs");
+
 const userRoutes = require("./routes/user");
+const trafficRoute = require("./routes/traffic");
+
+const {connectMongoDb} = require("./connection");
+
+
+const app = express();
 
 //Database connection
 connectMongoDb("mongodb://127.0.0.1:27017/Gully-map")
 
 //Middlewares
 app.use(express.json());
-app.use("urlencoded", express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieparser());
 app.use("/api/traffic",authmiddleware, trafficRoute);
 

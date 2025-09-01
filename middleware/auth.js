@@ -1,19 +1,18 @@
 const {getuser} = require("../services/auth");
 
+function authmiddleware(req, res, next) {
+  try {
+    const token = req.cookies?.uid;
+    if (!token) return res.status(401).json({ msg: "No token, authorization denied" });
 
-function authmiddleware(req,res,next) {
-    const token = req.cookies?.uid || req.headers["authorization"]?.split(" ")[1];
-    if(!token){
-        return res.status(401).json({msg: "No authentication token, authorization denied"});
-    }
-    try{
-        const user = getuser(token);
-        req.user = user;
-        next();
+    const user = getuser(token);
+    if (!user) return res.status(401).json({ msg: "Invalid token" });
 
-    }catch(error){
-        res.status(401).json({msg: "Token verification failed, authorization denied"});
-    }
+    req.user = user;  // so req.user.id and req.user.username are available
+    next();
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
+  }
 }
 
 module.exports = authmiddleware;

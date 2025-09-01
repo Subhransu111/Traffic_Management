@@ -1,18 +1,24 @@
 const jwt = require("jsonwebtoken");
-const secret = "map_secret";
-function setuser(user){
-    const payload = { id: user._id, email: user.email };
-    return jwt.sign(payload, secret, { expiresIn: "1h" });
-}
+const secret = process.env.SECRET ||"map_secret";
+const setuser = (user) => {
+    return jwt.sign(
+        {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        },
+        secret,
+        { expiresIn: "1d" }
+    );
+};
 
-  
+// get user from token
+const getuser = (token) => {
+    try {
+        return jwt.verify(token, secret);
+    } catch (err) {
+        return null;
+    }
+};
 
-function getuser(token){
-    if (!token) return null;
-    return jwt.verify(token,secret)
-}
-
-module.exports={
-    setuser,
-    getuser
-}
+module.exports = { setuser, getuser };

@@ -1,7 +1,6 @@
-import express from "express";
-import User, { findOne } from "../models/user";
-import { hash, compare } from "bcryptjs";
-import { setuser } from "../services/auth";
+const User = require("../models/user.js");
+const { hash, compare } = require ("bcryptjs");
+const { setuser } = require ("../services/auth");
 
 //register new user
 const registeruser = async (req,res)=>{
@@ -30,7 +29,7 @@ const Loginuser = async (req,res)=>{
         if(!email || !password){
             return res.status(400).json({msg: "Not all fields have been entered"});
         }
-        const user = await findOne({email});
+        const user = await User.findOne({email});
         const isMatch = await compare(password, user.password);
         if (!user || !isMatch) {
             return res.status(401).json({ msg: "Invalid credentials" });
@@ -47,6 +46,4 @@ const Loginuser = async (req,res)=>{
 }
 
 }
-
-export const register = registeruser;
-export const login = Loginuser;
+module.exports = { registeruser, Loginuser };

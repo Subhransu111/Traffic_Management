@@ -1,12 +1,15 @@
 
-const Traffic = require("../models/traffic_report");
+const Traffic = require ("../models/traffic_report");
 
 // Create a new traffic report
-export const Trafficreport = async(req,res)=>{
+ const Trafficreport = async(req,res)=>{
     try{
         const{lat,lng,address,congestionLevel} = req.body;
         if(!lat || !lng || !address || !congestionLevel){
             return res.status(400).json({msg: "Not all fields have been entered"});
+        }
+        if (!req.user || !req.user.id || !req.user.username) {
+            return res.status(401).json({ msg: "Invalid user data in token" });
         }
 
         const Newreport = new Traffic({
@@ -21,7 +24,11 @@ export const Trafficreport = async(req,res)=>{
             message: "Traffic reported successfully",
             Newreport
         })
-    }catch(error){
-        res.status(500).json({message:"server error"})
+    }catch (error) {
+        console.error("Traffic report error:", error); 
+
+        res.status(500).json({ message: error.message });
     }
-}
+};
+
+module.exports = {Trafficreport};
