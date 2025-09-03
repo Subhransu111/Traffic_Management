@@ -1,4 +1,5 @@
 const express= require("express");
+const cors = require("cors");
 
 const cookieparser = require("cookie-parser");
 const authmiddleware = require("./middleware/auth");
@@ -10,6 +11,10 @@ const {connectMongoDb} = require("./connection");
 
 
 const app = express();
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}))
 
 //Database connection
 connectMongoDb("mongodb://127.0.0.1:27017/Gully-map")
